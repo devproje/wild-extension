@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "net.projecttl"
-version = "1.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -19,6 +19,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation(kotlin("reflect"))
     compileOnly("io.papermc.paper:paper-api:1.21.7-R0.1-SNAPSHOT")
 }
 

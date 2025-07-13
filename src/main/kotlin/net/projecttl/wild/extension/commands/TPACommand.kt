@@ -5,7 +5,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
-import io.papermc.paper.command.brigadier.argument.resolvers.selector.EntitySelectorArgumentResolver
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
 import net.projecttl.wild.extension.CorePlugin
 import net.projecttl.wild.extension.model.BrigadierCommand
 import net.projecttl.wild.extension.util.asString
@@ -19,7 +19,6 @@ class TPACommand(private val plugin: CorePlugin) : BrigadierCommand {
             register(accept())
             register(deny())
         }
-
     }
 
     private fun core(): LiteralCommandNode<CommandSourceStack> {
@@ -27,10 +26,15 @@ class TPACommand(private val plugin: CorePlugin) : BrigadierCommand {
             .requires { it.sender is Player }
             .then(Commands.argument("target", ArgumentTypes.player()).executes { ctx ->
                 val player: Player = ctx.source.sender as Player
-                val resolver = ctx.getArgument("target", EntitySelectorArgumentResolver::class.java)
+                val resolver = ctx.getArgument("target", PlayerSelectorArgumentResolver::class.java)
                 val target = resolver.resolve(ctx.source).firstOrNull()
                 if (target !is Player)
                     return@executes Command.SINGLE_SUCCESS
+
+                if (player.uniqueId == target.uniqueId) {
+                    player.sendMessage("<red>자기 자신에게 텔레포트를 할 수 없습니다.".toMini())
+                    return@executes Command.SINGLE_SUCCESS
+                }
 
                 if (!target.isOnline) {
                     player.sendMessage("<yellow>\"${target.displayName().asString()}\" <red>플레이어는 오프라인이므로 텔레포트가 불가 합니다.".toMini())

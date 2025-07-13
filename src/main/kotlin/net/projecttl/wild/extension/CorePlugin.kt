@@ -12,12 +12,11 @@ class CorePlugin : JavaPlugin() {
 
     override fun onEnable() {
         teleport = TeleportService(this)
-
-        lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { cmds ->
-            CoreCommand(this).register(cmds.registrar())
-            TPACommand(this).register(cmds.registrar())
-        }
+        
+        logger.info("Plugin enabled!")
     }
 
-    override fun onDisable() {}
+    override fun onDisable() {
+        logger.info("Plugin disabled!")
+    }
 }
