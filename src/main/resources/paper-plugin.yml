@@ -8,6 +8,3 @@ author: Project_IO
 website: https://projecttl.net
 
 permissions:
-  wild.admin.reload:
-    description: Allows reloading the plugin
-    default: op
