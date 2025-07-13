@@ -1,0 +1,12 @@
+name: ${project.name}
+version: ${project.version}
+main: net.projecttl.wild.extension.CorePlugin
+api-version: 1.21.7
+description: Wild server extension plugin
+author: Project_IO
+website: https://projecttl.net
+
+permissions:
+  wild.admin.reload:
+    description: Allows reloading the plugin
+    default: op
