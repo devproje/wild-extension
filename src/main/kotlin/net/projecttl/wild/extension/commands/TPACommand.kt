@@ -5,11 +5,11 @@ import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.EntitySelectorArgumentResolver
 import net.projecttl.wild.extension.CorePlugin
 import net.projecttl.wild.extension.model.BrigadierCommand
 import net.projecttl.wild.extension.util.asString
 import net.projecttl.wild.extension.util.toMini
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 class TPACommand(private val plugin: CorePlugin) : BrigadierCommand {
@@ -27,7 +27,10 @@ class TPACommand(private val plugin: CorePlugin) : BrigadierCommand {
             .requires { it.sender is Player }
             .then(Commands.argument("target", ArgumentTypes.player()).executes { ctx ->
                 val player: Player = ctx.source.sender as Player
-                val target = ctx.getArgument("target", Player::class.java)
+                val resolver = ctx.getArgument("target", EntitySelectorArgumentResolver::class.java)
+                val target = resolver.resolve(ctx.source).firstOrNull()
+                if (target !is Player)
+                    return@executes Command.SINGLE_SUCCESS
 
                 if (!target.isOnline) {
                     player.sendMessage("<yellow>\"${target.displayName().asString()}\" <red>플레이어는 오프라인이므로 텔레포트가 불가 합니다.".toMini())
@@ -51,7 +54,7 @@ class TPACommand(private val plugin: CorePlugin) : BrigadierCommand {
                         <green>요청을 받으시려면 /tpaccept 거절하시려면 /tpdeny를 입력 해주세요.
                         <yellow><italic>이 요청은 3분동안 유효합니다.
                     """.trimIndent().toMini())
-                } catch (e: RuntimeException) {
+                } catch (_: RuntimeException) {
                     player.sendMessage("<red>이미 텔레포트 요청이 존재합니다.".toMini())
                 } catch (_: Exception) {
                     player.sendMessage("<red>알수없는 오류가 발생 했어요. 서버 관리자에게 문의 해주세요!".toMini())
